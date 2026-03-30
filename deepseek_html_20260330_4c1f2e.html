@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Jifunze Kiswahili | Swahili to English Translation Lab</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f6f9fc 0%, #eef2f5 100%);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 2rem 1.5rem;
+            color: #1e2a3e;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* header & intro */
+        .hero {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #0b3b2f, #1e6f5c);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+            display: inline-block;
+        }
+
+        .hero .swahili-icon {
+            font-size: 2rem;
+            display: inline-block;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .hero p {
+            color: #2c4b3e;
+            max-width: 650px;
+            margin: 0.8rem auto 0;
+            font-weight: 500;
+            background: rgba(255,245,220,0.6);
+            padding: 0.6rem 1.2rem;
+            border-radius: 60px;
+            backdrop-filter: blur(2px);
+            font-size: 1rem;
+        }
+
+        /* two-column layout */
+        .dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+        }
+
+        /* lesson panel (words + sentences) */
+        .lesson-panel {
+            flex: 2;
+            min-width: 280px;
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        /* quiz & feedback panel */
+        .quiz-panel {
+            flex: 1.5;
+            min-width: 300px;
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            height: fit-content;
+        }
+
+        .section-header {
+            background: #1e5f4b;
+            padding: 1rem 1.5rem;
+            color: white;
+        }
+
+        .section-header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-header h2 i {
+            font-size: 1.3rem;
+        }
+
+        /* word/sentence list styling */
+        .vocab-list, .sentences-list {
+            padding: 0.8rem 0;
+        }
+
+        .word-card, .sentence-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.9rem 1.5rem;
+            border-bottom: 1px solid #e9edf2;
+            transition: background 0.2s;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .word-card:hover, .sentence-card:hover {
+            background: #f8fafc;
+        }
+
+        .swahili-term {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #1e4620;
+            background: #eef5ea;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            display: inline-block;
+        }
+
+        .swahili-sentence {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #1f543e;
+            background: #e4f3ed;
+            padding: 0.2rem 0.9rem;
+            border-radius: 40px;
+        }
+
+        .translation-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .translation-text {
+            color: #2c3e4e;
+            font-weight: 500;
+            background: #f1f5f9;
+            padding: 0.3rem 1rem;
+            border-radius: 32px;
+            font-size: 0.9rem;
+        }
+
+        .reveal-btn {
+            background: none;
+            border: 1px solid #b9cfc7;
+            padding: 0.3rem 0.9rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #1f6e58;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .reveal-btn:hover {
+            background: #1e6f5c;
+            color: white;
+            border-color: #1e6f5c;
+        }
+
+        /* quiz area */
+        .quiz-content {
+            padding: 1.8rem 1.5rem;
+        }
+
+        .quiz-question {
+            background: #fef9e6;
+            border-left: 5px solid #e9b35f;
+            padding: 1rem;
+            border-radius: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-question p {
+            font-weight: 600;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #2d3e2b;
+        }
+
+        .quiz-question .hint {
+            font-size: 0.8rem;
+            color: #b65717;
+            font-weight: normal;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            font-size: 1rem;
+            border: 2px solid #cfdfd9;
+            border-radius: 1.2rem;
+            font-family: inherit;
+            background: white;
+            transition: 0.2s;
+            margin-top: 0.5rem;
+        }
+
+        .answer-input:focus {
+            border-color: #1e6f5c;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(30,111,92,0.2);
+        }
+
+        .quiz-actions {
+            display: flex;
+            gap: 12px;
+            margin: 1rem 0 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: #1e6f5c;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary:hover {
+            background: #0f5343;
+            transform: scale(0.97);
+        }
+
+        .btn-secondary {
+            background: #eef2f0;
+            border: 1px solid #cbdcd5;
+            padding: 0.7rem 1.4rem;
+            border-radius: 2rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #dfe7e3;
+        }
+
+        .feedback {
+            background: #f0f7f4;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-weight: 500;
+            border-left: 5px solid #2c9c7c;
+        }
+
+        .feedback.correct {
+            background: #e0f2e9;
+            border-left-color: #2b7a4b;
+            color: #145c3a;
+        }
+
+        .feedback.wrong {
+            background: #ffe8e6;
+            border-left-color: #c23b22;
+            color: #9b2e1a;
+        }
+
+        .score-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 1.2rem;
+            background: #eef3f0;
+            padding: 0.6rem 1rem;
+            border-radius: 60px;
+        }
+
+        .score-badge {
+            font-weight: 800;
+            font-size: 1.3rem;
+            background: #1e5f4b;
+            color: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+        }
+
+        hr {
+            margin: 1rem 0;
+            border-color: #dce5e0;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 0.8rem;
+            color: #4f6b5f;
+        }
+
+        @media (max-width: 780px) {
+            body {
+                padding: 1rem;
+            }
+            .word-card, .sentence-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <h1>
+            <span class="swahili-icon">🇹🇿</span> 
+            Swahili → English Translator
+        </h1>
+        <p>📖 Learn essential Swahili words & common sentences. Click "Reveal" to check meanings, then test yourself with interactive quizzes!</p>
+    </div>
+
+    <div class="dashboard">
+        <!-- LEFT PANEL: VOCABULARY & SENTENCE LIBRARY -->
+        <div class="lesson-panel">
+            <div class="section-header">
+                <h2>📚 Swahili Library <span style="font-size:0.9rem; font-weight:normal;">(click to reveal)</span></h2>
+            </div>
+            <div style="padding: 0 0 0.5rem 0;">
+                <div class="vocab-list" id="vocabListContainer"></div>
+                <div style="margin: 0.5rem 1.5rem; border-top: 2px dashed #cce3db;"></div>
+                <div class="sentences-list" id="sentencesListContainer"></div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: QUIZ & SELF TEST -->
+        <div class="quiz-panel">
+            <div class="section-header">
+                <h2>✍️ Translation Challenge</h2>
+            </div>
+            <div class="quiz-content">
+                <div class="score-area">
+                    <span>🏆 Your score</span>
+                    <span class="score-badge" id="scoreDisplay">0</span>
+                </div>
+                <div id="quizDynamicArea">
+                    <!-- dynamic quiz question will be injected -->
+                </div>
+                <div class="quiz-actions">
+                    <button class="btn-primary" id="checkAnswerBtn">✔ Check Translation</button>
+                    <button class="btn-secondary" id="nextQuestionBtn">⏩ Next Question</button>
+                </div>
+                <div id="feedbackMessage" class="feedback">
+                    💡 Your result will appear here. Start by answering the question above!
+                </div>
+                <hr>
+                <button class="btn-secondary" id="resetQuizBtn" style="width:100%;">⟳ Reset Quiz Score</button>
+            </div>
+        </div>
+    </div>
+    <footer>
+        🌍 Karibu! — Learn Swahili by translating words & sentences. Build vocabulary naturally.
+    </footer>
+</div>
+
+<script>
+    // ---------- TEACHING DATA: Swahili words & sentences with English translations ----------
+    const vocabulary = [
+        { swahili: "Habari", english: "Hello / How are you?" },
+        { swahili: "Asante", english: "Thank you" },
+        { swahili: "Samahani", english: "Sorry / Excuse me" },
+        { swahili: "Ndiyo", english: "Yes" },
+        { swahili: "Hapana", english: "No" },
+        { swahili: "Rafiki", english: "Friend" },
+        { swahili: "Nyumba", english: "House / Home" },
+        { swahili: "Chakula", english: "Food" },
+        { swahili: "Maji", english: "Water" },
+        { swahili: "Nzuri", english: "Good / Beautiful" }
+    ];
+
+    const sentences = [
+        { swahili: "Jina langu ni Ali.", english: "My name is Ali." },
+        { swahili: "Ninatoka Tanzania.", english: "I come from Tanzania." },
+        { swahili: "Ninafurahi kukutana nawe.", english: "I am happy to meet you." },
+        { swahili: "Bei ni ngapi?", english: "How much is the price?" },
+        { swahili: "Naweza kupata maji tafadhali?", english: "Can I get water please?" },
+        { swahili: "Nakupenda sana.", english: "I love you very much." },
+        { swahili: "Leo ni siku nzuri.", english: "Today is a good day." },
+        { swahili: "Tutaonana kesho.", english: "See you tomorrow." }
+    ];
+
+    // Combine all items for quiz (both words & sentences to make it richer)
+    let allQuizItems = [];
+
+    function buildQuizBank() {
+        const wordItems = vocabulary.map(item => ({
+            type: 'word',
+            swahili: item.swahili,
+            english: item.english,
+            displayPrompt: `Translate: "${item.swahili}"`
+        }));
+        const sentenceItems = sentences.map(item => ({
+            type: 'sentence',
+            swahili: item.swahili,
+            english: item.english,
+            displayPrompt: `Translate sentence: "${item.swahili}"`
+        }));
+        allQuizItems = [...wordItems, ...sentenceItems];
+    }
+
+    // ---------- Render word cards (with reveal) ----------
+    function renderVocabulary() {
+        const container = document.getElementById('vocabListContainer');
+        if (!container) return;
+        container.innerHTML = '';
+        vocabulary.forEach((item, idx) => {
+            const card = document.createElement('div');
+            card.className = 'word-card';
+            card.innerHTML = `
+                <div>
+                    <span class="swahili-term">${escapeHtml(item.swahili)}</span>
+                </div>
+                <div class="translation-area">
+                    <span class="translation-text" id="wordTrans-${idx}" style="display:none;">${escapeHtml(item.english)}</span>
+                    <button class="reveal-btn" data-target="wordTrans-${idx}">Reveal English</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        // attach reveal events
+        document.querySelectorAll('.reveal-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const targetId = btn.getAttribute('data-target');
+                const transSpan = document.getElementById(targetId);
+                if (transSpan) {
+                    if (transSpan.style.display === 'none' || transSpan.style.display === '') {
+                        transSpan.style.display = 'inline-block';
+                        btn.textContent = 'Hide';
+                    } else {
+                        transSpan.style.display = 'none';
+                        btn.textContent = 'Reveal English';
+                    }
+                }
+            });
+        });
+    }
+
+    function renderSentences() {
+        const container = document.getElementById('sentencesListContainer');
+        if (!container) return;
+        container.innerHTML = '';
+        sentences.forEach((item, idx) => {
+            const card = document.createElement('div');
+            card.className = 'sentence-card';
+            card.innerHTML = `
+                <div>
+                    <span class="swahili-sentence">${escapeHtml(item.swahili)}</span>
+                </div>
+                <div class="translation-area">
+                    <span class="translation-text" id="sentTrans-${idx}" style="display:none;">${escapeHtml(item.english)}</span>
+                    <button class="reveal-btn" data-target="sentTrans-${idx}">Reveal English</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+        // attach events for sentences reveal (works because reveal-btn class already attached, but we need to reattach due to dynamic? but we already attach globally after each render? Actually we call after both renders, better attach once)
+        attachRevealEvents();
+    }
+
+    function attachRevealEvents() {
+        document.querySelectorAll('.reveal-btn').forEach(btn => {
+            // remove old listeners to avoid duplicates, but simple replace with new listener
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+            newBtn.addEventListener('click', (e) => {
+                const targetId = newBtn.getAttribute('data-target');
+                const transSpan = document.getElementById(targetId);
+                if (transSpan) {
+                    if (transSpan.style.display === 'none' || transSpan.style.display === '') {
+                        transSpan.style.display = 'inline-block';
+                        newBtn.textContent = 'Hide';
+                    } else {
+                        transSpan.style.display = 'none';
+                        newBtn.textContent = 'Reveal English';
+                    }
+                }
+            });
+        });
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
+    }
+
+    // ---------- QUIZ LOGIC ----------
+    let currentQuizItem = null;
+    let currentScore = 0;
+    let answered = false;    // to prevent multiple scoring on same question
+    let currentAnswerSubmitted = false;
+
+    const scoreDisplaySpan = document.getElementById('scoreDisplay');
+    const quizDynamicArea = document.getElementById('quizDynamicArea');
+    const feedbackDiv = document.getElementById('feedbackMessage');
+    const checkBtn = document.getElementById('checkAnswerBtn');
+    const nextBtn = document.getElementById('nextQuestionBtn');
+    const resetBtn = document.getElementById('resetQuizBtn');
+
+    function updateScoreUI() {
+        scoreDisplaySpan.textContent = currentScore;
+    }
+
+    // generate a random quiz item (different from current? optional but fine)
+    function pickRandomQuizItem() {
+        if (!allQuizItems.length) buildQuizBank();
+        const randomIndex = Math.floor(Math.random() * allQuizItems.length);
+        return { ...allQuizItems[randomIndex] }; // clone
+    }
+
+    function renderCurrentQuestion() {
+        if (!currentQuizItem) {
+            currentQuizItem = pickRandomQuizItem();
+        }
+        const promptText = currentQuizItem.displayPrompt;
+        quizDynamicArea.innerHTML = `
+            <div class="quiz-question">
+                <p>📢 ${escapeHtml(promptText)}</p>
+                <div class="hint">✏️ Type your English translation below</div>
+                <input type="text" id="userAnswerInput" class="answer-input" placeholder="Your English translation..." autocomplete="off">
+            </div>
+        `;
+        // focus on input
+        const inputField = document.getElementById('userAnswerInput');
+        if (inputField) inputField.focus();
+        answered = false;
+        currentAnswerSubmitted = false;
+    }
+
+    // Normalize strings for flexible comparison: trim, lower, remove extra spaces, handle punctuation tolerance
+    function normalizeString(str) {
+        return str.trim().toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ');
+    }
+
+    function isAnswerCorrect(userAnswer, correctAnswer) {
+        const normUser = normalizeString(userAnswer);
+        const normCorrect = normalizeString(correctAnswer);
+        // Direct match
+        if (normUser === normCorrect) return true;
+        // additional tolerance: if correct contains key phrase? but we keep strict but friendly
+        // also allow common synonyms? but for teaching we use exact translation from dataset.
+        // edge: sometimes "thank you" vs "thanks"? We'll add slight leniency for "asante" case only? but use strict for accuracy.
+        // But to improve learning: we allow if user answer is close enough? We'll keep exact match plus minor punctuation tolerance already applied.
+        // additionally, for phrases like "I love you very much" vs "i love you so much"? We'll keep exact from dataset.
+        return normUser === normCorrect;
+    }
+
+    function handleCheckAnswer() {
+        if (!currentQuizItem) {
+            feedbackDiv.innerHTML = `<div class="feedback wrong">⚠️ No active question. Click Next Question.</div>`;
+            return;
+        }
+        if (answered && currentAnswerSubmitted) {
+            feedbackDiv.innerHTML = `<div class="feedback">⏳ You already answered this question! Click "Next Question" for a new one.</div>`;
+            return;
+        }
+        const inputEl = document.getElementById('userAnswerInput');
+        if (!inputEl) return;
+        const userAnswer = inputEl.value.trim();
+        if (userAnswer === "") {
+            feedbackDiv.innerHTML = `<div class="feedback wrong">📝 Please type your translation before checking.</div>`;
+            return;
+        }
+        const correctAns = currentQuizItem.english;
+        const isCorrect = isAnswerCorrect(userAnswer, correctAns);
+        
+        if (isCorrect) {
+            if (!answered) {
+                currentScore++;
+                updateScoreUI();
+                answered = true;
+                currentAnswerSubmitted = true;
+                feedbackDiv.innerHTML = `<div class="feedback correct">✅ Perfect! "${escapeHtml(userAnswer)}" is correct. +1 point!<br> ✔ Correct translation: "${escapeHtml(correctAns)}"</div>`;
+            } else {
+                feedbackDiv.innerHTML = `<div class="feedback wrong">⚠️ You already scored for this question. Move to next.</div>`;
+            }
+        } else {
+            // wrong answer
+            if (!answered) {
+                feedbackDiv.innerHTML = `<div class="feedback wrong">❌ Not quite. You wrote "${escapeHtml(userAnswer)}".<br> 📖 Correct translation: "${escapeHtml(correctAns)}". Keep practicing!</div>`;
+                answered = true;      // mark as answered (but no score increment)
+                currentAnswerSubmitted = true;
+                // no score change
+            } else {
+                feedbackDiv.innerHTML = `<div class="feedback wrong">You already attempted this question. Press Next for a new challenge.</div>`;
+            }
+        }
+        // Disable further check on same question visually not needed but state prevents double scoring
+        // Optionally disable input? but user can still type, no effect on score
+    }
+
+    function loadNewQuestion() {
+        // pick new random item
+        currentQuizItem = pickRandomQuizItem();
+        renderCurrentQuestion();
+        answered = false;
+        currentAnswerSubmitted = false;
+        feedbackDiv.innerHTML = `💡 New question! Type your English translation and hit "Check Translation".`;
+    }
+
+    function resetQuizScore() {
+        currentScore = 0;
+        updateScoreUI();
+        feedbackDiv.innerHTML = `🔄 Score reset to 0. Keep translating Swahili like a pro!`;
+        // keep current question unchanged, but reset answered flag? For fairness we reset the question state but not question content
+        if (currentQuizItem) {
+            // reset answer state so user can answer again without penalty?
+            answered = false;
+            currentAnswerSubmitted = false;
+            const inputField = document.getElementById('userAnswerInput');
+            if (inputField) {
+                inputField.value = '';
+                inputField.focus();
+            }
+            feedbackDiv.innerHTML = `🧹 Score reset. You can try the current question again for practice.`;
+        } else {
+            loadNewQuestion();
+        }
+    }
+
+    // Initialize full UI
+    function init() {
+        buildQuizBank();
+        renderVocabulary();
+        renderSentences();
+        // quiz init
+        currentQuizItem = pickRandomQuizItem();
+        renderCurrentQuestion();
+        currentScore = 0;
+        updateScoreUI();
+        answered = false;
+        currentAnswerSubmitted = false;
+        
+        // Event listeners
+        checkBtn.addEventListener('click', handleCheckAnswer);
+        nextBtn.addEventListener('click', () => {
+            loadNewQuestion();
+        });
+        resetBtn.addEventListener('click', resetQuizScore);
+        
+        // optional: pressing Enter in input triggers check
+        document.addEventListener('keypress', (e) => {
+            if (e.target && e.target.id === 'userAnswerInput' && e.key === 'Enter') {
+                e.preventDefault();
+                handleCheckAnswer();
+            }
+        });
+    }
+
+    init();
+</script>
+</body>
+</html>
